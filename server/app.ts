@@ -7,6 +7,7 @@ import authRouter from "./routes/authRouter";
 import bookshelfRouter from "./routes/bookshelfRouter";
 import bookSearchRouter from "./routes/bookSearchRouter";
 import bookRouter from "./routes/bookRouter";
+const fetchTranscript = require("./scripts/fetchTranscript");
 
 import fileNotFoundError from "./errors/fileNotFound";
 import cors from "cors";
@@ -50,20 +51,17 @@ app.use("/api/book/search", bookSearchRouter);
 app.use("/api/book", bookRouter);
 app.use("/api/", authRouter);
 
-app.get("/api/transcriptApi/", (req: Request, res: Response) => {
+app.get("/api/transcriptApi/", async (req: Request, res: Response) => {
   const { url } = req.query;
-  const formattedUrl = encodeURIComponent(url as string);
-  exec(`python3 server/scripts/you_transcript_api.py ${formattedUrl}`, (error, stdout, stderr) => {
-    if (error) {
-      console.error(`exec error: ${error}`);
-      return res.status(500).send({ message: "Failed to execute Python script" });
-    }
-    const result = JSON.parse(stdout); // Parse the stdout as JSON
-    res.send({ message: "Python script executed", result: result });
-  });
+
+  try {
+    const result = await fetchTranscript(url);
+    res.send({ message: "Successfully fetched transcript", result: result });
+  } catch (error) {
+    console.error(`Failed to fetch transcript: ${error}`);
+    return res.status(500).send({ message: "Failed to fetch transcript" });
+  }
 });
-
-
 
 app.all("/api/*", fileNotFoundError);
 
@@ -78,13 +76,5 @@ app.get("*", (_, res: Response) => {
     "Its running!\nTo use the API, please refer to the Project README.md.";
   res.send(text);
 });
-
-
-
-
-
-
-
-
 
 export default app;
