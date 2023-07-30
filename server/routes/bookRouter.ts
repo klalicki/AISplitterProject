@@ -4,7 +4,7 @@ import Bookshelves from "../models/Bookshelves";
 import { getUserId } from "../middlewares/auth";
 import { stripHtml } from "string-strip-html";
 
-import methodNotAllowedError from "../errors/methodNotAllowed";
+import methodNotAllowedError from "./errors/methodNotAllowed";
 
 const router = express.Router();
 

@@ -3,7 +3,7 @@ import axios from "axios";
 
 import Bookshelves from "../models/Bookshelves";
 
-import methodNotAllowedError from "../errors/methodNotAllowed";
+import methodNotAllowedError from "./errors/methodNotAllowed";
 import { getUserId, auth } from "../middlewares/auth";
 
 const router = express.Router();

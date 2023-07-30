@@ -7,14 +7,14 @@ import { IUser } from "../models/Users";
  */
 const users: IUser[] = [
   {
-    id: "2725",
-    username: "hermione",
-    password: "granger",
+    id: "012bce18-3336-4f80-a2a5-998ba63e244f",
+    username: "wall-e",
+    password: "eve",
   },
   {
-    id: "5976",
-    username: "harry",
-    password: "potter",
+    id: "133f4c89-ba53-43d2-b188-3dec3cff74b3",
+    username: "r2-d2",
+    password: "c-3po",
   },
 ];
 

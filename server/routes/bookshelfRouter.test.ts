@@ -14,7 +14,7 @@ describe("GET /api/bookshelf/", () => {
   });
 
   it("should get a list of all books inside of the user's bookshelf", async () => {
-    const userId = "5976";
+    const userId = "133f4c89-ba53-43d2-b188-3dec3cff74b3";
     const token = generateAccessToken(userId);
 
     const { body } = await request(app)
@@ -37,7 +37,7 @@ describe("GET /api/bookshelf/", () => {
   // TODO book's description stripped HTML tags
 
   it("should not include any books from another user's bookshelf", async () => {
-    const userId = "5976";
+    const userId = "133f4c89-ba53-43d2-b188-3dec3cff74b3";
     const token = generateAccessToken(userId);
 
     const { body } = await request(app)
@@ -59,7 +59,7 @@ describe("GET /api/bookshelf/", () => {
   });
 
   it("should not return the user id in the response", async () => {
-    const userId = "5976";
+    const userId = "133f4c89-ba53-43d2-b188-3dec3cff74b3";
     const token = generateAccessToken(userId);
 
     const { body } = await request(app)
@@ -83,7 +83,7 @@ describe("PUT /api/bookshelf/:bookId/:shelfName", () => {
   });
 
   it("should add a new book to a user's bookshelf and return the entire bookshelf in the response", async () => {
-    const userId = "2725";
+    const userId = "012bce18-3336-4f80-a2a5-998ba63e244f";
     const bookId = "RRLmDwAAQBAJ";
     const token = generateAccessToken(userId);
 
@@ -107,7 +107,7 @@ describe("PUT /api/bookshelf/:bookId/:shelfName", () => {
   });
 
   it("should move a book from one shelf to another and return the entire bookshelf in the response", async () => {
-    const userId = "2725";
+    const userId = "012bce18-3336-4f80-a2a5-998ba63e244f";
     const bookId = "ppjUtAEACAAJ";
     const token = generateAccessToken(userId);
 
@@ -134,7 +134,7 @@ describe("PUT /api/bookshelf/:bookId/:shelfName", () => {
   // TODO book's description stripped HTML tags
 
   it("should return 404 if a book does not exist", async () => {
-    const userId = "2725";
+    const userId = "012bce18-3336-4f80-a2a5-998ba63e244f";
     const token = generateAccessToken(userId);
 
     await request(app)
@@ -145,7 +145,7 @@ describe("PUT /api/bookshelf/:bookId/:shelfName", () => {
   });
 
   it("should return 400 if the shelf name is invalid", async () => {
-    const userId = "2725";
+    const userId = "012bce18-3336-4f80-a2a5-998ba63e244f";
     const token = generateAccessToken(userId);
 
     await request(app)
@@ -162,7 +162,7 @@ describe("DELETE /api/bookshelf/:bookId", () => {
   });
 
   it("should delete a book from a user's bookshelf and return the entire bookshelf in the response", async () => {
-    const userId = "2725";
+    const userId = "012bce18-3336-4f80-a2a5-998ba63e244f";
     const bookId = "qKydDAAAQBAJ";
     const token = generateAccessToken(userId);
 
@@ -193,7 +193,7 @@ describe("DELETE /api/bookshelf/:bookId", () => {
   // TODO book's description stripped HTML tags
 
   it("should return 404 if a book is not in a user's bookshelf", async () => {
-    const userId = "2725";
+    const userId = "012bce18-3336-4f80-a2a5-998ba63e244f";
     const token = generateAccessToken(userId);
 
     await request(app)
@@ -204,7 +204,7 @@ describe("DELETE /api/bookshelf/:bookId", () => {
   });
 
   it("should return a 404 instead of deleting a book in another user's bookshelf", async () => {
-    const userId = "2725";
+    const userId = "012bce18-3336-4f80-a2a5-998ba63e244f";
     const token = generateAccessToken(userId);
 
     await request(app)

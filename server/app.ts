@@ -8,7 +8,7 @@ import bookshelfRouter from "./routes/bookshelfRouter";
 import bookSearchRouter from "./routes/bookSearchRouter";
 import bookRouter from "./routes/bookRouter";
 
-import fileNotFoundError from "./errors/fileNotFound";
+import fileNotFoundError from "./routes/errors/fileNotFound";
 import cors from "cors";
 
 const app = express();
@@ -53,17 +53,20 @@ app.use("/api/", authRouter);
 app.get("/api/transcriptApi/", (req: Request, res: Response) => {
   const { url } = req.query;
   const formattedUrl = encodeURIComponent(url as string);
-  exec(`python3 server/scripts/you_transcript_api.py ${formattedUrl}`, (error, stdout, stderr) => {
-    if (error) {
-      console.error(`exec error: ${error}`);
-      return res.status(500).send({ message: "Failed to execute Python script" });
+  exec(
+    `python3 server/scripts/you_transcript_api.py ${formattedUrl}`,
+    (error, stdout, stderr) => {
+      if (error) {
+        console.error(`exec error: ${error}`);
+        return res
+          .status(500)
+          .send({ message: "Failed to execute Python script" });
+      }
+      const result = JSON.parse(stdout); // Parse the stdout as JSON
+      res.send({ message: "Python script executed", result: result });
     }
-    const result = JSON.parse(stdout); // Parse the stdout as JSON
-    res.send({ message: "Python script executed", result: result });
-  });
+  );
 });
-
-
 
 app.all("/api/*", fileNotFoundError);
 
@@ -78,13 +81,5 @@ app.get("*", (_, res: Response) => {
     "Its running!\nTo use the API, please refer to the Project README.md.";
   res.send(text);
 });
-
-
-
-
-
-
-
-
 
 export default app;

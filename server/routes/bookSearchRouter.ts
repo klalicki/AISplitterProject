@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import axios from "axios";
 import { IVolume } from "../models/Bookshelves";
 
-import methodNotAllowedError from "../errors/methodNotAllowed";
+import methodNotAllowedError from "./errors/methodNotAllowed";
 
 import Cache from "../cache";
 const searchCache = new Cache();

@@ -3,11 +3,11 @@ import { IBook } from "../models/Bookshelves";
 const startBookshelves: IBook[] = [
   {
     id: "qKydDAAAQBAJ",
-    userId: "2725",
+    userId: "012bce18-3336-4f80-a2a5-998ba63e244f",
     title: "Add a Pinch",
     subtitle: "Easier, Faster, Fresher Southern Classics: A Cookbook",
     authors: ["Robyn Stone"],
-    publisher: "Clarkson Potter/Ten Speed",
+    publisher: "Clarkson c-3po/Ten Speed",
     publishedDate: "2017-03-28",
     description:
       "With a foreword by Ree Drummond, this beautiful book has 100 easier, faster, lightened-up Southern recipes, from the blogger behind the popular Add a Pinch website. A generation ago, home cooks may have had all day to prepare dinner, but most folks now want convenient, fast recipes that don’t rely on canned soups or other processed products. Here, fresh ingredients take center stage in slow cooker meals, casseroles and one-dish suppers, salads, soups, and desserts that have deep, satisfying flavors but are a cinch to make. Smart swaps like Greek yogurt for mayo in pimento cheese and cauliflower “rice” put a modern spin on these dishes. With 75 color photographs and lots of sidebars, this is the new Southern cooking handbook.",
@@ -63,7 +63,7 @@ const startBookshelves: IBook[] = [
   },
   {
     id: "A1QoDwAAQBAJ",
-    userId: "2725",
+    userId: "012bce18-3336-4f80-a2a5-998ba63e244f",
     title: "Mastering React Native",
     authors: ["Eric Masiello", "Jacob Friedmann"],
     publisher: "Packt Publishing Ltd",
@@ -124,7 +124,7 @@ const startBookshelves: IBook[] = [
   },
   {
     id: "aHo3DwAAQBAJ",
-    userId: "2725",
+    userId: "012bce18-3336-4f80-a2a5-998ba63e244f",
     title: "The User Experience Team of One",
     subtitle: "A Research and Design Survival Guide",
     authors: ["Leah Buley"],
@@ -188,7 +188,7 @@ const startBookshelves: IBook[] = [
   },
   {
     id: "ppjUtAEACAAJ",
-    userId: "2725",
+    userId: "012bce18-3336-4f80-a2a5-998ba63e244f",
     title: "Fullstack React",
     subtitle: "The Complete Guide to ReactJS and Friends",
     authors: ["Anthony Accomazzo", "Nate Murray", "Ari Lerner"],
@@ -246,7 +246,7 @@ const startBookshelves: IBook[] = [
   },
   {
     id: "dgYvDwAAQBAJ",
-    userId: "2725",
+    userId: "012bce18-3336-4f80-a2a5-998ba63e244f",
     title: "Eloquent JavaScript, 2nd Ed.",
     subtitle: "A Modern Introduction to Programming",
     authors: ["Marijn Haverbeke"],
@@ -308,7 +308,7 @@ const startBookshelves: IBook[] = [
   },
   {
     id: "YhdU8thA6eEC",
-    userId: "2725",
+    userId: "012bce18-3336-4f80-a2a5-998ba63e244f",
     title: "The Godfather Effect",
     subtitle: "Changing Hollywood, America, and Me",
     authors: ["Tom Santopietro"],
@@ -370,7 +370,7 @@ const startBookshelves: IBook[] = [
   },
   {
     id: "F9wIMQAACAAJ",
-    userId: "2725",
+    userId: "012bce18-3336-4f80-a2a5-998ba63e244f",
     title: "Alice's Adventures in Wonderland Lewis Carroll",
     authors: ["Lewis Carroll"],
     publisher: "CreateSpace Independent Publishing Platform",
@@ -423,7 +423,7 @@ const startBookshelves: IBook[] = [
   },
   {
     id: "oy3psgEACAAJ",
-    userId: "5976",
+    userId: "133f4c89-ba53-43d2-b188-3dec3cff74b3",
     title: "Pokemon Essential Handbook",
     subtitle: "The Need-To-Know STATS and Facts on Over 700 Pokeman",
     authors: ["Scholastic Inc.", "Scholastic Editors"],

@@ -1,7 +1,10 @@
 {
-  "name": "book-store",
+  "name": "ai-splitter",
   "version": "1.0.0",
   "private": true,
+  "engine": {
+    "node": "18.x"
+  },
   "scripts": {
     "start": "ts-node-dev server/index.ts",
     "test": "jest --watchAll",
