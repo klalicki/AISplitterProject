@@ -10,14 +10,12 @@ export interface ICollection {
   updatedAt: Date;
 }
 
-class Collections {
+export class Collections {
   private _collections: ICollection[] = [];
   private _id = 0;
 
   getAll() {
-    return produce(this._collections, (draftState) => {
-      return draftState;
-    });
+    return this._collections;
   }
 
   create(userId: string, collectionName: string) {
@@ -32,9 +30,7 @@ class Collections {
     };
     this._collections.push(collection);
 
-    return produce(collection, (draftState) => {
-      return draftState;
-    });
+    return collection;
   }
 
   listAllByUser(userId: string) {
@@ -55,9 +51,9 @@ class Collections {
 
   private _getIndex(userId: string, collectionId: number) {
     const ids = this._collections.map((collection) => collection.id);
-    const idx = ids.find((id) => id === collectionId);
+    const idx = ids.findIndex((id) => id === collectionId);
 
-    if (!idx || this._collections[idx].userId !== userId)
+    if (idx < 0 || this._collections[idx].userId !== userId)
       throw new CollectionNotFoundError();
 
     return idx;
@@ -70,18 +66,13 @@ class Collections {
   ) {
     const idx = this._getIndex(userId, collectionId);
 
-    this._collections = produce(this._collections, (draftState) => {
-      draftState[idx] = {
-        ...draftState[idx],
-        name: collectionName,
-        updatedAt: new Date(),
-      };
-      return draftState;
-    });
+    this._collections[idx] = {
+      ...this._collections[idx],
+      name: collectionName,
+      updatedAt: new Date(),
+    };
 
-    return produce(this._collections[idx], (draftState) => {
-      return draftState;
-    });
+    return this._collections[idx];
   }
 
   deleteCollection(userId: string, collectionId: number) {
@@ -93,22 +84,22 @@ class Collections {
     });
   }
 
+  clear() {
+    this._collections = [];
+    this._id = 0;
+  }
+
   createChunk(userId: string, collectionId: number, text: string) {
     const idx = this._getIndex(userId, collectionId);
 
-    this._collections = produce(this._collections, (draftState) => {
-      draftState[idx].chunks.add(text);
-      draftState[idx] = {
-        ...draftState[idx],
-        updatedAt: new Date(),
-      };
-      return draftState;
-    });
+    this._collections[idx].chunks.add(text);
+    this._collections[idx] = {
+      ...this._collections[idx],
+      updatedAt: new Date(),
+    };
 
-    return produce(this._collections[idx], (draftState) => {
-      return draftState;
-    });
+    return this._collections[idx];
   }
 }
 
-export { Collections };
+export const collections = new Collections();

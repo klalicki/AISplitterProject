@@ -94,16 +94,19 @@ describe("editCollectionName", () => {
   it("should edit a collection's name", () => {
     // TODO test date and time
     const inst = new Collections();
-    inst.create("012bce18-3336-4f80-a2a5-998ba63e244z", "Do not update me");
-    const { id } = inst.create(
+    const collection1 = inst.create(
       "012bce18-3336-4f80-a2a5-998ba63e244z",
       "Update me"
     );
-    inst.create("012bce18-3336-4f80-a2a5-998ba63e244z", "And me");
+    const collection2 = inst.create(
+      "012bce18-3336-4f80-a2a5-998ba63e244z",
+      "Update me too"
+    );
+    inst.create("012bce18-3336-4f80-a2a5-998ba63e244z", "And not me");
 
     const collection = inst.editCollectionName(
       "012bce18-3336-4f80-a2a5-998ba63e244z",
-      id,
+      collection1.id,
       "My new name"
     );
     expect(collection).toMatchObject({
@@ -124,6 +127,13 @@ describe("editCollectionName", () => {
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
     });
+
+    const collectio2n = inst.editCollectionName(
+      "012bce18-3336-4f80-a2a5-998ba63e244z",
+      collection1.id,
+      "Another new name"
+    );
+    expect(collection2.name).toEqual("Another new name");
   });
   it('should throw a "CollectionNotFoundError" if no collection with the ID exists', () => {
     const inst = new Collections();
