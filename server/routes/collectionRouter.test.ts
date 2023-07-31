@@ -41,7 +41,15 @@ describe("POST /api/collection", () => {
       updatedAt: "2023-07-30T21:46:39.625Z",
     });
   });
-  it.skip("should return a validation error if missing the collection name", async () => {});
+  it("should return a validation error if missing the collection name", async () => {
+    const userId = "133f4c89-ba53-43d2-b188-3dec3cff74b3";
+    const token = generateAccessToken(userId);
+
+    await request(app)
+      .post("/api/collection")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(400);
+  });
   it("should return a 401 if the user has not logged in", async () => {
     await request(app)
       .post("/api/collection")
@@ -256,7 +264,24 @@ describe("PUT /api/collection/:id", () => {
       })
       .expect(404);
   });
-  it.skip("should validate collection name", async () => {});
+  it("should return 400 if the collection does not have a name", async () => {
+    const userId = "133f4c89-ba53-43d2-b188-3dec3cff74b3";
+    const token = generateAccessToken(userId);
+
+    const {
+      body: { id },
+    } = await request(app)
+      .post("/api/collection")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        name: "Collection 1",
+      });
+
+    const { body } = await request(app)
+      .put(`/api/collection/${id}`)
+      .set("Authorization", `Bearer ${token}`)
+      .expect(400);
+  });
   it("should return 401 if the user is not logged in", async () => {
     await request(app)
       .put(`/api/collection/999`)
@@ -318,5 +343,99 @@ describe("DELETE /api/collection/:collectionId", () => {
   });
   it("should return 401 if the user is not logged in", async () => {
     await request(app).delete(`/api/collection/1`).expect(401);
+  });
+});
+
+describe("POST /api/collection/chunks", () => {
+  it("should add a chunk of text to a collection", async () => {
+    const userId = "133f4c89-ba53-43d2-b188-3dec3cff74b3";
+    const token = generateAccessToken(userId);
+
+    const {
+      body: { id },
+    } = await request(app)
+      .post("/api/collection")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        name: "Collection 1",
+      });
+
+    const { body } = await request(app)
+      .post(`/api/collection/${id}/chunks`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        text: "This should be very long text",
+      })
+      .expect(200);
+
+    expect(body).toMatchObject({
+      id: id,
+      name: "Collection 1",
+      chunks: ["This should be very long text"],
+      createdAt: "2023-07-30T21:46:39.625Z",
+      updatedAt: "2023-07-30T21:46:39.625Z", // TODO change dates
+    });
+  });
+  it.skip("should return 404 if the collection does not exist", async () => {
+    const userId = "133f4c89-ba53-43d2-b188-3dec3cff74b3";
+    const token = generateAccessToken(userId);
+
+    await request(app)
+      .post(`/api/collection/999/chunks`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        text: "This should be very long text",
+      })
+      .expect(404);
+  });
+  it("should not add a new chunk if the collection does not belong to the user", async () => {
+    const otherUser = "133f4c89-ba53-43d2-b188-3dec3cff74bz";
+    const otherToken = generateAccessToken(otherUser);
+
+    const {
+      body: { id },
+    } = await request(app)
+      .post("/api/collection")
+      .set("Authorization", `Bearer ${otherToken}`)
+      .send({
+        text: "This should be very long text",
+      });
+
+    const userId = "133f4c89-ba53-43d2-b188-3dec3cff74b3";
+    const token = generateAccessToken(userId);
+
+    await request(app)
+      .post(`/api/collection/${id}/chunks`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        text: "This should be very long text",
+      })
+      .expect(404);
+  });
+  it("should return a 400 error if the chunk is missing", async () => {
+    const userId = "133f4c89-ba53-43d2-b188-3dec3cff74b3";
+    const token = generateAccessToken(userId);
+
+    const {
+      body: { id },
+    } = await request(app)
+      .post("/api/collection")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        text: "This should be very long text",
+      });
+
+    await request(app)
+      .post(`/api/collection/${id}/chunks`)
+      .set("Authorization", `Bearer ${token}`)
+      .expect(400);
+  });
+  it("should return a 401 if the user is not logged in", async () => {
+    await request(app)
+      .post(`/api/collection/1/chunks`)
+      .send({
+        text: "This should be very long text",
+      })
+      .expect(401);
   });
 });

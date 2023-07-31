@@ -34,6 +34,28 @@ const handleErrors = (
 };
 
 router
+  .route("/:collectionId/chunks")
+  .post((req: Request, res: Response) => {
+    const { collectionId } = req.params;
+    const { userId, text } = req.body;
+    if (!text || typeof text !== "string") {
+      return res.status(400).send({
+        message: 'You need to include a chunk as "text"',
+      });
+    }
+
+    return handleErrors(collectionId, res, () => {
+      const collection = collections.createChunk(
+        userId,
+        parseInt(collectionId),
+        text
+      );
+      return res.send(makeCollectionBody(collection));
+    });
+  })
+  .all(methodNotAllowedError);
+
+router
   .route("/:collectionId")
   .get((req: Request, res: Response) => {
     const { collectionId } = req.params;
@@ -49,7 +71,12 @@ router
   .put((req: Request, res: Response) => {
     const { collectionId } = req.params;
     const { userId, name } = req.body;
-    // TODO validation
+    if (!name || typeof name !== "string") {
+      return res.status(400).send({
+        message: 'You need to include a new "name" for your collection',
+      });
+    }
+
     return handleErrors(collectionId, res, () => {
       const collection = collections.editCollectionName(
         userId,
@@ -79,8 +106,13 @@ router
     );
   })
   .post((req: Request, res: Response) => {
-    // TODO validate
     const { userId, name } = req.body;
+    if (!name || typeof name !== "string") {
+      return res.status(400).send({
+        message: 'You need to include a "name" for your collection',
+      });
+    }
+
     const collection = collections.create(userId, name);
     return res.status(201).send(makeCollectionBody(collection));
   })
