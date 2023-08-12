@@ -1,16 +1,19 @@
 import { resolve } from "path";
 import { existsSync } from "fs";
 import express, { Request, Response, NextFunction } from "express";
+import { exec } from "child_process";
 
 import authRouter from "./routes/authRouter";
 import bookshelfRouter from "./routes/bookshelfRouter";
 import bookSearchRouter from "./routes/bookSearchRouter";
 import bookRouter from "./routes/bookRouter";
+const fetchTranscript = require("./scripts/fetchTranscript");
 
 import fileNotFoundError from "./errors/fileNotFound";
+import cors from "cors";
 
 const app = express();
-
+app.use(cors());
 app.use(express.json());
 
 // Error handler
@@ -47,6 +50,19 @@ app.use("/api/bookshelf", bookshelfRouter);
 app.use("/api/book/search", bookSearchRouter);
 app.use("/api/book", bookRouter);
 app.use("/api/", authRouter);
+
+app.get("/api/transcriptApi/", async (req: Request, res: Response) => {
+  const { url } = req.query;
+
+  try {
+    const result = await fetchTranscript(url);
+    res.send({ message: "Successfully fetched transcript", result: result });
+  } catch (error) {
+    console.error(`Failed to fetch transcript: ${error}`);
+    return res.status(500).send({ message: "Failed to fetch transcript" });
+  }
+});
+
 app.all("/api/*", fileNotFoundError);
 
 app.get("*", (_, res: Response) => {
