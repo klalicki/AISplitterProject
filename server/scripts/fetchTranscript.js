@@ -9,5 +9,4 @@ const fetchTranscript = async (url) => {
     throw error;
   }
 };
-
 module.exports = fetchTranscript;

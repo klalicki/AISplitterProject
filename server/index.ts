@@ -1,6 +1,6 @@
 /**
  * The server is for the Book Store project
- * @author AlbanyCanCode
+ * @author CanCode Communities
  */
 import app from "./app";
 

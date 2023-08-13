@@ -2,7 +2,7 @@ import express, { Request, Response, NextFunction } from "express";
 
 import Users, { IUser } from "../models/Users";
 
-import methodNotAllowedError from "../errors/methodNotAllowed";
+import methodNotAllowedError from "./errors/methodNotAllowed";
 import { auth } from "../middlewares/auth";
 import { generateAccessToken } from "../services/authServices";
 

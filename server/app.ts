@@ -1,15 +1,13 @@
 import { resolve } from "path";
 import { existsSync } from "fs";
 import express, { Request, Response, NextFunction } from "express";
-import { exec } from "child_process";
+//@ts-ignore
+import fetchTranscript from "./scripts/fetchTranscript";
 
 import authRouter from "./routes/authRouter";
-import bookshelfRouter from "./routes/bookshelfRouter";
-import bookSearchRouter from "./routes/bookSearchRouter";
-import bookRouter from "./routes/bookRouter";
-const fetchTranscript = require("./scripts/fetchTranscript");
+import collectionRouter from "./routes/collectionRouter";
 
-import fileNotFoundError from "./errors/fileNotFound";
+import fileNotFoundError from "./routes/errors/fileNotFound";
 import cors from "cors";
 
 const app = express();
@@ -22,8 +20,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     console.log(
       "Hey there. There could be a problem with your request or it could be that your instructors didn't write a fool-proof server. Check your request first. If you think it is OK, please copy and paste the stack trace below and send it your instructors."
     );
-    console.error(err);
-    console.log("\n");
+    console.log(err);
     return res.status(500).send({
       message:
         "This is no fun. An unexpected error occurred that may be server related. Please take a look at the command line output.",
@@ -46,9 +43,7 @@ app.use(express.static(resolve("./client/build")));
 /**
  * APIs
  */
-app.use("/api/bookshelf", bookshelfRouter);
-app.use("/api/book/search", bookSearchRouter);
-app.use("/api/book", bookRouter);
+app.use("/api/collection", collectionRouter);
 app.use("/api/", authRouter);
 
 app.get("/api/transcriptApi/", async (req: Request, res: Response) => {
@@ -61,20 +56,20 @@ app.get("/api/transcriptApi/", async (req: Request, res: Response) => {
     console.error(`Failed to fetch transcript: ${error}`);
     return res.status(500).send({ message: "Failed to fetch transcript" });
   }
-});
 
-app.all("/api/*", fileNotFoundError);
+  app.all("/api/*", fileNotFoundError);
 
-app.get("*", (_, res: Response) => {
-  if (existsSync(resolve("./client/build", "index.html"))) {
-    /**
-     * Routes all other GET requests that are not a part of your API above to your React app, where React Router will handle all other routes
-     */
-    return res.sendFile(resolve("./client/build", "index.html"));
-  }
-  const text =
-    "Its running!\nTo use the API, please refer to the Project README.md.";
-  res.send(text);
+  app.get("*", (_, res: Response) => {
+    if (existsSync(resolve("./client/build", "index.html"))) {
+      /**
+       * Routes all other GET requests that are not a part of your API above to your React app, where React Router will handle all other routes
+       */
+      return res.sendFile(resolve("./client/build", "index.html"));
+    }
+    const text =
+      "Its running!\nTo use the API, please refer to the Project README.md.";
+    res.send(text);
+  });
 });
 
 export default app;
