@@ -36,7 +36,6 @@ describe("POST /api/collection", () => {
     expect(body).toMatchObject({
       id: 1,
       name: "My new collection",
-      chunks: expect.any(Array),
       createdAt: "2023-07-30T21:46:39.625Z",
       updatedAt: "2023-07-30T21:46:39.625Z",
     });
@@ -81,6 +80,13 @@ describe("GET /api/collection", () => {
         name: "Collection 1",
       });
 
+    await request(app)
+      .post(`/api/collection/${collection1.id}/text`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        text: "You should see me",
+      });
+
     const { body: collection2 } = await request(app)
       .post("/api/collection")
       .set("Authorization", `Bearer ${token}`)
@@ -100,7 +106,7 @@ describe("GET /api/collection", () => {
     expect(body[0]).toMatchObject({
       id: collection1.id,
       name: "Collection 1",
-      chunks: expect.any(Array),
+      text: "You should see me",
       createdAt: "2023-07-30T21:46:39.625Z",
       updatedAt: "2023-07-30T21:46:39.625Z",
     });
@@ -144,6 +150,13 @@ describe("GET /api/collection/:id", () => {
       });
 
     await request(app)
+      .post(`/api/collection/${collection.id}/text`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        text: "You should see me",
+      });
+
+    await request(app)
       .post("/api/collection")
       .set("Authorization", `Bearer ${token}`)
       .send({
@@ -158,7 +171,7 @@ describe("GET /api/collection/:id", () => {
     expect(body).toMatchObject({
       id: collection.id,
       name: "Collection 1",
-      chunks: expect.any(Array),
+      text: "You should see me",
       createdAt: "2023-07-30T21:46:39.625Z",
       updatedAt: "2023-07-30T21:46:39.625Z",
     });
@@ -223,7 +236,6 @@ describe("PUT /api/collection/:id", () => {
     expect(body).toMatchObject({
       id: id,
       name: "Collection 2",
-      chunks: expect.any(Array),
       createdAt: "2023-07-30T21:46:39.625Z",
       updatedAt: "2023-07-30T21:46:39.625Z", // TODO change dates
     });
@@ -320,7 +332,7 @@ describe("DELETE /api/collection/:collectionId", () => {
       .set("Authorization", `Bearer ${token}`)
       .expect(404);
   });
-  it("should not change any collections that belong to a user", async () => {
+  it("should not change any collections that belong to another user", async () => {
     const otherUser = "133f4c89-ba53-43d2-b188-3dec3cff74bz";
     const otherToken = generateAccessToken(otherUser);
 
@@ -337,7 +349,7 @@ describe("DELETE /api/collection/:collectionId", () => {
     const token = generateAccessToken(userId);
 
     await request(app)
-      .delete("/api/collection/999")
+      .delete(`/api/collection/${id}`)
       .set("Authorization", `Bearer ${token}`)
       .expect(404);
   });
@@ -346,8 +358,8 @@ describe("DELETE /api/collection/:collectionId", () => {
   });
 });
 
-describe("POST /api/collection/chunks", () => {
-  it("should add a chunk of text to a collection", async () => {
+describe("POST /api/collection/:collectionId/text", () => {
+  it("should add a block of text to a collection", async () => {
     const userId = "133f4c89-ba53-43d2-b188-3dec3cff74b3";
     const token = generateAccessToken(userId);
 
@@ -361,7 +373,7 @@ describe("POST /api/collection/chunks", () => {
       });
 
     const { body } = await request(app)
-      .post(`/api/collection/${id}/chunks`)
+      .post(`/api/collection/${id}/text`)
       .set("Authorization", `Bearer ${token}`)
       .send({
         text: "This should be very long text",
@@ -371,7 +383,7 @@ describe("POST /api/collection/chunks", () => {
     expect(body).toMatchObject({
       id: id,
       name: "Collection 1",
-      chunks: ["This should be very long text"],
+      text: "This should be very long text",
       createdAt: "2023-07-30T21:46:39.625Z",
       updatedAt: "2023-07-30T21:46:39.625Z", // TODO change dates
     });
@@ -381,14 +393,14 @@ describe("POST /api/collection/chunks", () => {
     const token = generateAccessToken(userId);
 
     await request(app)
-      .post(`/api/collection/999/chunks`)
+      .post(`/api/collection/999/text`)
       .set("Authorization", `Bearer ${token}`)
       .send({
         text: "This should be very long text",
       })
       .expect(404);
   });
-  it("should not add a new chunk if the collection does not belong to the user", async () => {
+  it("should not add a new block of text if the collection does not belong to the user", async () => {
     const otherUser = "133f4c89-ba53-43d2-b188-3dec3cff74bz";
     const otherToken = generateAccessToken(otherUser);
 
@@ -405,14 +417,14 @@ describe("POST /api/collection/chunks", () => {
     const token = generateAccessToken(userId);
 
     await request(app)
-      .post(`/api/collection/${id}/chunks`)
+      .post(`/api/collection/${id}/text`)
       .set("Authorization", `Bearer ${token}`)
       .send({
         text: "This should be very long text",
       })
       .expect(404);
   });
-  it("should return a 400 error if the chunk is missing", async () => {
+  it("should return a 400 error if the text is missing", async () => {
     const userId = "133f4c89-ba53-43d2-b188-3dec3cff74b3";
     const token = generateAccessToken(userId);
 
@@ -426,13 +438,13 @@ describe("POST /api/collection/chunks", () => {
       });
 
     await request(app)
-      .post(`/api/collection/${id}/chunks`)
+      .post(`/api/collection/${id}/text`)
       .set("Authorization", `Bearer ${token}`)
       .expect(400);
   });
   it("should return a 401 if the user is not logged in", async () => {
     await request(app)
-      .post(`/api/collection/1/chunks`)
+      .post(`/api/collection/1/text`)
       .send({
         text: "This should be very long text",
       })

@@ -2,7 +2,7 @@ import { Collections } from "./Collections";
 import { CollectionNotFoundError } from "../errors/CollectionNotFoundError";
 
 describe("create", () => {
-  it.only("should create a new collection", () => {
+  it("should create a new collection", () => {
     const inst = new Collections();
     const collection = inst.create(
       "012bce18-3336-4f80-a2a5-998ba63e244f",
@@ -13,7 +13,6 @@ describe("create", () => {
       id: 1,
       userId: "012bce18-3336-4f80-a2a5-998ba63e244f",
       name: "Split me!",
-      chunks: expect.any(Set),
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
     });
@@ -23,7 +22,6 @@ describe("create", () => {
       id: 1,
       userId: "012bce18-3336-4f80-a2a5-998ba63e244f",
       name: "Split me!",
-      chunks: expect.any(Set),
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
     });
@@ -68,7 +66,7 @@ describe("getByIdAndUser", () => {
       "012bce18-3336-4f80-a2a5-998ba63e244f",
       id
     );
-    expect(collection.name).toBe("Split me!");
+    expect(collection.name).toBe("and me");
   });
   it('should throw a "CollectionNotFoundError" if no collection with the ID exists', () => {
     const inst = new Collections();
@@ -104,16 +102,15 @@ describe("editCollectionName", () => {
     );
     inst.create("012bce18-3336-4f80-a2a5-998ba63e244z", "And not me");
 
-    const collection = inst.editCollectionName(
+    const newCollection1 = inst.editCollectionName(
       "012bce18-3336-4f80-a2a5-998ba63e244z",
       collection1.id,
       "My new name"
     );
-    expect(collection).toMatchObject({
+    expect(newCollection1).toMatchObject({
       id: 1,
       userId: "012bce18-3336-4f80-a2a5-998ba63e244z",
       name: "My new name",
-      chunks: expect.any(Set),
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
     });
@@ -123,17 +120,16 @@ describe("editCollectionName", () => {
       id: 1,
       userId: "012bce18-3336-4f80-a2a5-998ba63e244z",
       name: "My new name",
-      chunks: expect.any(Set),
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
     });
 
-    const collectio2n = inst.editCollectionName(
+    const newestCollection1 = inst.editCollectionName(
       "012bce18-3336-4f80-a2a5-998ba63e244z",
       collection1.id,
       "Another new name"
     );
-    expect(collection2.name).toEqual("Another new name");
+    expect(newestCollection1.name).toEqual("Another new name");
   });
   it('should throw a "CollectionNotFoundError" if no collection with the ID exists', () => {
     const inst = new Collections();
@@ -199,31 +195,31 @@ describe("deleteCollection", () => {
   });
 });
 
-describe("createChunk", () => {
-  it("adds chunks to a collection", () => {
+describe("addText", () => {
+  it("adds text to a collection", () => {
     const inst = new Collections();
-    inst.create("012bce18-3336-4f80-a2a5-998ba63e244z", "Leave me be");
+    inst.create("012bce18-3336-4f80-a2a5-998ba63e244f", "Leave me be");
     const { id } = inst.create(
       "012bce18-3336-4f80-a2a5-998ba63e244f",
-      "Add chunks to be"
+      "Add text to me"
     );
 
-    const collection = inst.createChunk(
+    const collection = inst.addText(
       "012bce18-3336-4f80-a2a5-998ba63e244f",
       id,
       "Pretends this is several characters long."
     );
     expect(collection).toMatchObject({
-      id: 1,
+      id: 2,
       userId: "012bce18-3336-4f80-a2a5-998ba63e244f",
-      name: "Split me!",
-      chunks: expect.any(Set),
+      name: "Add text to me",
+      text: "Pretends this is several characters long.",
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
     });
 
     const collections = inst.getAll();
-    expect([...collections[1].chunks]).toEqual(
+    expect(collections[1].text).toEqual(
       "Pretends this is several characters long."
     );
   });
@@ -231,7 +227,7 @@ describe("createChunk", () => {
     const inst = new Collections();
 
     expect(() =>
-      inst.createChunk(
+      inst.addText(
         "012bce18-3336-4f80-a2a5-998ba63e244f",
         9999,
         "This will fail"
@@ -246,11 +242,7 @@ describe("createChunk", () => {
     );
 
     expect(() =>
-      inst.createChunk(
-        "012bce18-3336-4f80-a2a5-998ba63e244f",
-        id,
-        "This will fail"
-      )
+      inst.addText("012bce18-3336-4f80-a2a5-998ba63e244f", id, "This will fail")
     ).toThrow(CollectionNotFoundError);
   });
 });

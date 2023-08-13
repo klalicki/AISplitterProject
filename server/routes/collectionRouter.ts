@@ -8,13 +8,6 @@ const router = express.Router();
 router.use(getUserId);
 router.use(auth);
 
-const makeCollectionBody = (collection: ICollection) => {
-  return {
-    ...collection,
-    chunks: [...collection.chunks],
-  };
-};
-
 const handleErrors = (
   collectionId: string,
   res: Response,
@@ -34,23 +27,23 @@ const handleErrors = (
 };
 
 router
-  .route("/:collectionId/chunks")
+  .route("/:collectionId/text")
   .post((req: Request, res: Response) => {
     const { collectionId } = req.params;
     const { userId, text } = req.body;
     if (!text || typeof text !== "string") {
       return res.status(400).send({
-        message: 'You need to include a chunk as "text"',
+        message: 'You need to include a block of text as "text"',
       });
     }
 
     return handleErrors(collectionId, res, () => {
-      const collection = collections.createChunk(
+      const collection = collections.addText(
         userId,
         parseInt(collectionId),
         text
       );
-      return res.send(makeCollectionBody(collection));
+      return res.send(collection);
     });
   })
   .all(methodNotAllowedError);
@@ -65,7 +58,7 @@ router
         userId,
         parseInt(collectionId)
       );
-      return res.send(makeCollectionBody(collection));
+      return res.send(collection);
     });
   })
   .put((req: Request, res: Response) => {
@@ -83,7 +76,7 @@ router
         parseInt(collectionId),
         name
       );
-      return res.send(makeCollectionBody(collection));
+      return res.send(collection);
     });
   })
   .delete((req: Request, res: Response) => {
@@ -101,9 +94,7 @@ router
   .get((req: Request, res: Response) => {
     const { userId } = req.body;
     const userCollections = collections.listAllByUser(userId);
-    return res.send(
-      userCollections.map((collection) => makeCollectionBody(collection))
-    );
+    return res.send(userCollections);
   })
   .post((req: Request, res: Response) => {
     const { userId, name } = req.body;
@@ -114,7 +105,7 @@ router
     }
 
     const collection = collections.create(userId, name);
-    return res.status(201).send(makeCollectionBody(collection));
+    return res.status(201).send(collection);
   })
   .all(methodNotAllowedError);
 

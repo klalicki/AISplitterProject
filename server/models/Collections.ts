@@ -5,7 +5,7 @@ export interface ICollection {
   id: number;
   userId: string;
   name: string;
-  chunks: Set<string>;
+  text?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -24,7 +24,6 @@ export class Collections {
       id: this._id,
       userId,
       name: collectionName,
-      chunks: new Set([]),
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -89,10 +88,10 @@ export class Collections {
     this._id = 0;
   }
 
-  createChunk(userId: string, collectionId: number, text: string) {
+  addText(userId: string, collectionId: number, text: string) {
     const idx = this._getIndex(userId, collectionId);
 
-    this._collections[idx].chunks.add(text);
+    this._collections[idx].text = text;
     this._collections[idx] = {
       ...this._collections[idx],
       updatedAt: new Date(),
