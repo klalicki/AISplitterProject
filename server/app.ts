@@ -7,10 +7,8 @@ import collectionRouter from "./routes/collectionRouter";
 import { fetchTranscript } from "./scripts/fetchTranscript";
 
 import fileNotFoundError from "./routes/errors/fileNotFound";
-import cors from "cors";
 
 const app = express();
-app.use(cors());
 app.use(express.json());
 
 // Error handler
