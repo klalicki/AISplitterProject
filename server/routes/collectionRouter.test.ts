@@ -376,7 +376,7 @@ describe("POST /api/collection/chunks", () => {
       updatedAt: "2023-07-30T21:46:39.625Z", // TODO change dates
     });
   });
-  it.skip("should return 404 if the collection does not exist", async () => {
+  it("should return 404 if the collection does not exist", async () => {
     const userId = "133f4c89-ba53-43d2-b188-3dec3cff74b3";
     const token = generateAccessToken(userId);
 

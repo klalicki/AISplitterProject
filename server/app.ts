@@ -1,11 +1,10 @@
 import { resolve } from "path";
 import { existsSync } from "fs";
 import express, { Request, Response, NextFunction } from "express";
-//@ts-ignore
-import fetchTranscript from "./scripts/fetchTranscript";
 
 import authRouter from "./routes/authRouter";
 import collectionRouter from "./routes/collectionRouter";
+import { fetchTranscript } from "./scripts/fetchTranscript";
 
 import fileNotFoundError from "./routes/errors/fileNotFound";
 import cors from "cors";
@@ -44,10 +43,14 @@ app.use(express.static(resolve("./client/build")));
  * APIs
  */
 app.use("/api/collection", collectionRouter);
-app.use("/api/", authRouter);
 
-app.get("/api/transcriptApi/", async (req: Request, res: Response) => {
+app.get("/api/youtube-transcript", async (req: Request, res: Response) => {
   const { url } = req.query;
+  if (!url || typeof url !== "string") {
+    return res.status(400).send({
+      message: 'You need to include the "url" as a query parameter',
+    });
+  }
 
   try {
     const result = await fetchTranscript(url);
@@ -56,20 +59,22 @@ app.get("/api/transcriptApi/", async (req: Request, res: Response) => {
     console.error(`Failed to fetch transcript: ${error}`);
     return res.status(500).send({ message: "Failed to fetch transcript" });
   }
+});
 
-  app.all("/api/*", fileNotFoundError);
+app.use("/api/", authRouter);
 
-  app.get("*", (_, res: Response) => {
-    if (existsSync(resolve("./client/build", "index.html"))) {
-      /**
-       * Routes all other GET requests that are not a part of your API above to your React app, where React Router will handle all other routes
-       */
-      return res.sendFile(resolve("./client/build", "index.html"));
-    }
-    const text =
-      "Its running!\nTo use the API, please refer to the Project README.md.";
-    res.send(text);
-  });
+app.all("/api/*", fileNotFoundError);
+
+app.get("*", (_, res: Response) => {
+  if (existsSync(resolve("./client/build", "index.html"))) {
+    /**
+     * Routes all other GET requests that are not a part of your API above to your React app, where React Router will handle all other routes
+     */
+    return res.sendFile(resolve("./client/build", "index.html"));
+  }
+  const text =
+    "Its running!\nTo use the API, please refer to the Project README.md.";
+  res.send(text);
 });
 
 export default app;

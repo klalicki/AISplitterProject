@@ -1,6 +1,6 @@
-const YoutubeTranscript = require("youtube-transcript").YoutubeTranscript;
+import { YoutubeTranscript } from "youtube-transcript";
 
-const fetchTranscript = async (url) => {
+const fetchTranscript = async (url: string) => {
   try {
     const data = await YoutubeTranscript.fetchTranscript(url);
     return data;
@@ -9,4 +9,5 @@ const fetchTranscript = async (url) => {
     throw error;
   }
 };
-module.exports = fetchTranscript;
+
+export { fetchTranscript };
