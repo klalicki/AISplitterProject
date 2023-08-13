@@ -1,10 +1,10 @@
 import { resolve } from "path";
 import { existsSync } from "fs";
 import express, { Request, Response, NextFunction } from "express";
-import { exec } from "child_process";
 
 import authRouter from "./routes/authRouter";
 import collectionRouter from "./routes/collectionRouter";
+import { fetchTranscript } from "./scripts/fetchTranscript";
 
 import fileNotFoundError from "./routes/errors/fileNotFound";
 import cors from "cors";
@@ -43,25 +43,25 @@ app.use(express.static(resolve("./client/build")));
  * APIs
  */
 app.use("/api/collection", collectionRouter);
-app.use("/api/", authRouter);
 
-app.get("/api/transcriptApi/", (req: Request, res: Response) => {
+app.get("/api/youtube-transcript", async (req: Request, res: Response) => {
   const { url } = req.query;
-  const formattedUrl = encodeURIComponent(url as string);
-  exec(
-    `python3 server/scripts/you_transcript_api.py ${formattedUrl}`,
-    (error, stdout, stderr) => {
-      if (error) {
-        console.error(`exec error: ${error}`);
-        return res
-          .status(500)
-          .send({ message: "Failed to execute Python script" });
-      }
-      const result = JSON.parse(stdout); // Parse the stdout as JSON
-      res.send({ message: "Python script executed", result: result });
-    }
-  );
+  if (!url || typeof url !== "string") {
+    return res.status(400).send({
+      message: 'You need to include the "url" as a query parameter',
+    });
+  }
+
+  try {
+    const result = await fetchTranscript(url);
+    res.send({ message: "Successfully fetched transcript", result: result });
+  } catch (error) {
+    console.error(`Failed to fetch transcript: ${error}`);
+    return res.status(500).send({ message: "Failed to fetch transcript" });
+  }
 });
+
+app.use("/api/", authRouter);
 
 app.all("/api/*", fileNotFoundError);
 
