@@ -1,4 +1,3 @@
-import { produce } from "immer";
 import { CollectionNotFoundError } from "../errors/CollectionNotFoundError";
 
 export interface ICollection {
@@ -29,7 +28,7 @@ export class Collections {
     };
     this._collections.push(collection);
 
-    return collection;
+    return { ...collection };
   }
 
   listAllByUser(userId: string) {
@@ -45,7 +44,7 @@ export class Collections {
 
     if (!collection) throw new CollectionNotFoundError();
 
-    return collection;
+    return { ...collection };
   }
 
   private _getIndex(userId: string, collectionId: number) {
@@ -71,15 +70,14 @@ export class Collections {
       updatedAt: new Date(),
     };
 
-    return this._collections[idx];
+    return { ...this._collections[idx] };
   }
 
   deleteCollection(userId: string, collectionId: number) {
-    const idx = this._getIndex(userId, collectionId);
+    this._getIndex(userId, collectionId);
 
-    this._collections = produce(this._collections, (draftState) => {
-      draftState.splice(idx, 1);
-      return draftState;
+    this._collections = this._collections.filter((collection) => {
+      return collection.id !== collectionId;
     });
   }
 
@@ -97,7 +95,7 @@ export class Collections {
       updatedAt: new Date(),
     };
 
-    return this._collections[idx];
+    return { ...this._collections[idx] };
   }
 }
 
